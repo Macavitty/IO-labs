@@ -36,7 +36,17 @@ static int drv_close(struct inode *i, struct file *f) {
   return 0;
 }
 
-static ssize_t char_read(struct file *f, char __user *buf, size_t len, loff_t *offset) {
+static ssize_t read_dev(struct file *f, char __user *buf, size_t len, loff_t *offset) {
+    int i; 
+    printk(KERN_INFO "%s:\n", THIS_MODULE->name);
+    for (i = 0; i < proc_buf_size; i++){
+            printk(KERN_INFO "%ld\n", proc_buf[i]); 
+    }
+
+	return 0;
+}
+
+static ssize_t read_proc(struct file *f, char __user *buf, size_t len, loff_t *offset) {
     char sums[proc_buf_size * sizeof(int)];
     int i;
     int sums_i = 0;
@@ -53,7 +63,7 @@ static ssize_t char_read(struct file *f, char __user *buf, size_t len, loff_t *o
     
     if (len < sums_i) 
 		return -EFAULT;
-	
+    
 	if (copy_to_user(buf, sums, sums_i) != 0) {
 		return -EFAULT;
 	}
@@ -100,13 +110,13 @@ static struct file_operations char_fops = {
   .owner = THIS_MODULE,
   .open = drv_open,
   .release = drv_close,
-  .read = char_read,
+  .read = read_dev,
   .write = char_write
 };
 
 static struct file_operations proc_fops = {
 	.owner = THIS_MODULE,
-	.read = char_read,
+	.read = read_proc,
 	.write = proc_write,
 };
 
