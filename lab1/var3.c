@@ -36,17 +36,7 @@ static int drv_close(struct inode *i, struct file *f) {
   return 0;
 }
 
-static ssize_t read_dev(struct file *f, char __user *buf, size_t len, loff_t *offset) {
-    int i; 
-    printk(KERN_INFO "%s:\n", THIS_MODULE->name);
-    for (i = 0; i < proc_buf_size; i++){
-            printk(KERN_INFO "%ld\n", proc_buf[i]); 
-    }
-
-	return 0;
-}
-
-static ssize_t read_proc(struct file *f, char __user *buf, size_t len, loff_t *offset) {
+static ssize_t write_sums(struct file *f, char __user *buf, size_t len, loff_t *offset, int read_to_user){
     char sums[proc_buf_size * sizeof(int)];
     int i;
     int sums_i = 0;
@@ -64,12 +54,26 @@ static ssize_t read_proc(struct file *f, char __user *buf, size_t len, loff_t *o
     if (len < sums_i) 
 		return -EFAULT;
     
-	if (copy_to_user(buf, sums, sums_i) != 0) {
-		return -EFAULT;
-	}
+    if (read_to_user) {
+	    if (copy_to_user(buf, sums, sums_i) != 0) {
+		    return -EFAULT;
+	    }
+    } else {
+        if (printk(KERN_INFO "%s", sums) == 0) {
+		    return -EFAULT;
+	    }
+    }
 
     *offset = sums_i;
 	return sums_i;
+}
+
+static ssize_t read_dev(struct file *f, char __user *buf, size_t len, loff_t *offset) {
+    return write_sums(f, buf, len, offset, 0);
+}
+
+static ssize_t read_proc(struct file *f, char __user *buf, size_t len, loff_t *offset) {
+    return write_sums(f, buf, len, offset, 1);
 }
 
 static ssize_t char_write(struct file *f, const char __user *buf,  size_t len, loff_t *offset) {
