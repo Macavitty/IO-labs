@@ -9,7 +9,7 @@
 
 
 ## Инструкция по сборке
-$ cd IO-labs/lab1
+$ cd IO-labs/lab1 \
 $ make
 
 
@@ -25,20 +25,20 @@ $ make
 
 ## Примеры использования
 Записать в символьное устройство последовательно суммы 0, 19, 3: \
-$ cd IO-labs/lab1
-$ make
-$ sudo insmod var3.ko
-\# sudo echo 'foobarbaz' > /dev/var3
-\# sudo echo '  3[12 too4' > /dev/var3
-\# sudo echo '1asdf0001jcadcye^$1' > /dev/var3
-\# cat /dev/var3
-$ dmesg
-[51354.462670] var3:
-[51354.462670] 0
-[51354.462670] 19
-[51354.462670] 3
-\# cat /proc/var3
-0
-19
-3
+$ cd IO-labs/lab1 \
+$ make \
+$ sudo insmod var3.ko \
+\# sudo echo 'foobarbaz' > /dev/var3 \
+\# sudo echo '  3[12 too4' > /dev/var3 \
+\# sudo echo '1asdf0001jcadcye^$1' > /dev/var3 \
+\# cat /dev/var3 \
+$ dmesg \
+[51354.462670] var3: \
+[51354.462670] 0 \
+[51354.462670] 19 \
+[51354.462670] 3 \
+\# cat /proc/var3 \
+0 \
+19 \
+3 \
 $ sudo rmmod var3
