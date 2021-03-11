@@ -76,12 +76,39 @@ static ssize_t read_proc(struct file *f, char __user *buf, size_t len, loff_t *o
     return write_sums(f, buf, len, offset, 1);
 }
 
+static ssize_t proc_write(struct file *file, const char __user * ubuf, size_t count, loff_t* ppos) {
+	printk(KERN_DEBUG "%s: Attempt to write proc file", THIS_MODULE->name);
+	return -1;
+}
+
+static struct file_operations proc_fops = {
+	.owner = THIS_MODULE,
+	.read = read_proc,
+	.write = proc_write,
+};
+
 static ssize_t char_write(struct file *f, const char __user *buf,  size_t len, loff_t *offset) {
-    
+
+    char c;
     unsigned long sum  = 0;
     unsigned long current_num = 0;
-    char c;
     int i;
+
+    if (copy_from_user(&c, buf, 1) != 0) {
+            return -EFAULT;
+    }
+
+    if (c == 'r') {
+        char filename[256];
+        copy_from_user(&filename, buf + 2, len - 2);
+        filename[len - 3]='\0';
+        proc_remove(entry);
+	    printk(KERN_INFO "%s: proc file is deleted\n", THIS_MODULE->name);
+        entry = proc_create(filename, 0660, NULL, &proc_fops);
+	    printk(KERN_INFO "%s: proc file has been created\n", filename);
+        return len;
+    }
+
     for (i = 0; i < len; i++){
         if (copy_from_user(&c, buf + i, 1) != 0) {
             return -EFAULT;
@@ -105,23 +132,12 @@ static ssize_t char_write(struct file *f, const char __user *buf,  size_t len, l
     return len;
 }
 
-static ssize_t proc_write(struct file *file, const char __user * ubuf, size_t count, loff_t* ppos) {
-	printk(KERN_DEBUG "%s: Attempt to write proc file", THIS_MODULE->name);
-	return -1;
-}
-
 static struct file_operations char_fops = {
   .owner = THIS_MODULE,
   .open = drv_open,
   .release = drv_close,
   .read = read_dev,
   .write = char_write
-};
-
-static struct file_operations proc_fops = {
-	.owner = THIS_MODULE,
-	.read = read_proc,
-	.write = proc_write,
 };
 
 static int __init drv_init(void) {
