@@ -72,57 +72,27 @@ static PartTable def_part_table = {
 		start_head:     0x0,
 		start_sec:      0x0,
 		start_cyl:      0x0,
-		part_type:      0x05, // extended partition 
+		part_type:      0x83,  
 		end_sec:        0x0,
 		end_head:       0x0,
 		end_cyl:        0x0,
 		abs_start_sec:  0xF000,
-		sec_in_part:    0xA000 // 20 MiB
-	}
-};
-static unsigned int def_log_part_br_abs_start_sector[] = {0xF000, 0x14000};
-static const PartTable def_log_part_table[] = {
-	{
-		{
-			boot_type:      0x0,
-			start_head:     0x0,
-			start_sec:      0x0, 
-			start_cyl:      0x0, 
-			part_type:      0x83,
-			end_head:       0x0,
-			end_sec:        0x0,
-			end_cyl:        0x0,
-			abs_start_sec:  0x1,
-			sec_in_part:    0x4FFF
-		},
-		{
-			boot_type:      0x0,
-			start_head:     0x0,
-			start_sec:      0x0, 
-			start_cyl:      0x0, 
-			part_type:      0x05,
-			end_head:       0x0,
-			end_sec:        0x0,
-			end_cyl:        0x0,
-			abs_start_sec:  0x5000,
-			sec_in_part:    0x5000
-		}
+		sec_in_part:    0x5000 // 10 MiB
 	},
 	{
-		{
-			boot_type:      0x0,
-			start_head:     0x0,
-			start_sec:      0x0, 
-			start_cyl:      0x0, 
-			part_type:      0x83,
-			end_head:       0x0,
-			end_sec:        0x0,
-			end_cyl:        0x0,
-			abs_start_sec:  0x1,
-			sec_in_part:    0x4FFF
-		}
+		boot_type:      0x0,
+		start_head:     0x0,
+		start_sec:      0x0,
+		start_cyl:      0x0,
+		part_type:      0x83,  
+		end_sec:        0x0,
+		end_head:       0x0,
+		end_cyl:        0x0,
+		abs_start_sec:  0x14000,
+		sec_in_part:    0x5000 // 10 MiB
 	}
 };
+
 
 static void copy_mbr(u8 *disk) {
 	memset(disk, 0x0, MBR_SIZE);
@@ -140,13 +110,13 @@ static void copy_br(u8 *disk, int abs_start_sector, const PartTable *part_table)
 }
 
 void copy_mbr_n_br(u8 *disk) {
-	int i;
+	// int i;  
 
 	copy_mbr(disk);
-	for (i = 0; i < ARRAY_SIZE(def_log_part_table); i++)
-	{
-		copy_br(disk, def_log_part_br_abs_start_sector[i], &def_log_part_table[i]);
-	}
+	// for (i = 0; i < ARRAY_SIZE(def_log_part_table); i++)
+	// {
+		// copy_br(disk, def_log_part_br_abs_start_sector[i], &def_log_part_table[i]);
+	// }
 }
 
 /* Structure associated with Block device*/
@@ -181,7 +151,6 @@ static struct block_device_operations fops = {
 
 int disk_init(void) {
 	(device.data) = vmalloc(MEMSIZE * SECTOR_SIZE);
-	/* Setup its partition table */
 	copy_mbr_n_br(device.data);
 
 	return MEMSIZE;	

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-partitions = ["blocklab1", "blocklab5", "blocklab6"]
+partitions = ["blocklab1", "blocklab2", "blocklab3"]
 
 for p in partitions:
     os.system(f"mkfs.vfat /dev/{p}")

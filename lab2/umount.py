@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import subprocess
 
-partitions = ["blocklab1", "blocklab5", "blocklab6"]
+partitions = ["blocklab1", "blocklab2", "blocklab3"]
 
 for p in partitions:
     subprocess.run(["umount", f"/mnt/{p}"])
