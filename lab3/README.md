@@ -30,7 +30,7 @@ $ make
 $ cd IO-labs/lab3 \
 $ make \
 $ sudo insmod virt_net_if.ko \
-$ dmesg -w \
+$ dmesg -w 
 
 Компьютер В \
 $ nc -u &lt;enp0s3_ip&gt;  80 \
